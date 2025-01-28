@@ -53,7 +53,7 @@ namespace UiElements
 
         private void HandleClick()
         {
-            this.gameObject.SetActive(false);
+            this.mainObject.SetActive(false);
         }
 
         private void InitRecievedItem(ItemClickedSignal evt)

@@ -1,31 +1,56 @@
 using System.Collections.Generic;
-using System.Linq;
 using Components;
-using Factories;
 using UnityEngine;
 using Zenject;
 
 namespace Spawners
 {
-    public class ItemSpawner : MonoBehaviour, IInitializable
+    public class ItemSpawner : MonoBehaviour, ISpawnItem, ITickable
     {
         [SerializeField] private List<ItemType> itemTypes;
         private IInventory _inventory;
-        private ICreateItem _createItem;
 
         [Inject]
-        public void Construct(IInventory inventory, ICreateItem createItem)
+        public void Construct(IInventory inventory)
         {
             _inventory = inventory;
-            _createItem = createItem;
         }
-        
-        public void Initialize()
+
+        public void SpawnItem(ItemType type)
         {
-            foreach (var item in itemTypes.Select(type => _createItem.CreateItemByType(type)))
-            {
-                _inventory.Store(item, item.GetItemConfig().MaxStackCount);
-            }
+            var freeSlot = _inventory.GetFreeSlot();
+            Debug.Log("Spawning item");
+
+            var newItem = _inventory.CreateNewItemInstance(type, freeSlot.transform);
+            newItem.Count = newItem.GetItemConfig().MaxStackCount;
+            newItem.RefreshCount();
+        }
+
+        public void Tick()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                SpawnItem(ItemType.Cap);
+            
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+                SpawnItem(ItemType.BallisticVest);
+            
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+                SpawnItem(ItemType.Rifle);
+            
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+                SpawnItem(ItemType.Jacket);
+            
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+                SpawnItem(ItemType.HealthKit);
+            
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+                SpawnItem(ItemType.Gun);
+            
+            if (Input.GetKeyDown(KeyCode.Alpha7))
+                SpawnItem(ItemType.Helmet);
+            
+            if (Input.GetKeyDown(KeyCode.Alpha8))
+                SpawnItem(ItemType.None);
         }
     }
 }

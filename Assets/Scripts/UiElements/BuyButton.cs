@@ -42,16 +42,15 @@ namespace UiElements
         public void Click()
         {
             if (_itemConfig.ItemType != ItemType.Rifle && _itemConfig.ItemType != ItemType.Gun) return;
-            var amountToAdd = CalculateAmountToAdd(_itemConfig);
-            if (amountToAdd == 0) return;
-            _inventory.Store(_currentItem, amountToAdd);
+            var amountToAdd = _itemConfig.MaxStackCount;
+            if (amountToAdd == 0)
+            {
+                OnClick?.Invoke();
+                return;
+            }
+            
             OnClick?.Invoke();
-        }
-
-        private int CalculateAmountToAdd(ItemConfig config)
-        {
-            var currentCount = _inventory.GetItemCount(config.ItemType);
-            return Mathf.Max(0, config.MaxStackCount - currentCount);
+            _inventory.Store(_currentItem, amountToAdd);
         }
 
         private void OnDestroy()

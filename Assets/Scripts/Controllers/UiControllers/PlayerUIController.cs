@@ -56,10 +56,8 @@ namespace Controllers
         private void InitializeController(ModelServiceSignal modelSignal)
         {
             var model = modelSignal.PlayerPlayerModel;
-            Debug.Log($"Model passed {model}");
             if (model == null) return;
             
-            //_playerModel = model;
             _maxHealth = _playerModel.GetMaxHealth();
             _currentHealth = _playerModel.GetCurrentHealth();
             
@@ -122,9 +120,9 @@ namespace Controllers
 
         public void Dispose()
         {
-            _signalBus.Unsubscribe<HealPlayerSignal>(HandleHeal);
-            _signalBus.Unsubscribe<TakeDamagePlayerSignal>(HandleDamage);
-            _signalBus.Unsubscribe<ArmorPlayerSignal>(HandleArmor);
+            _signalBus.TryUnsubscribe<HealPlayerSignal>(HandleHeal);
+            _signalBus.TryUnsubscribe<TakeDamagePlayerSignal>(HandleDamage);
+            _signalBus.TryUnsubscribe<ArmorPlayerSignal>(HandleArmor);
         }
 
         private float CalculateClamp(float current, float max)

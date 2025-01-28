@@ -11,27 +11,28 @@ namespace Components
     {
         protected event Action<bool> OnItemClicked = delegate { };
         public int Count { get; set; }
+        
         public Transform dragParent;
-        protected Image ItemImage;
-        private Transform _originalParent;
+        private Image _itemImage;
+        
         private bool _isDragging;
         private bool _isPointerDown;
 
         protected virtual void Awake()
         {
-            ItemImage = GetComponent<Image>();
+            _itemImage = GetComponent<Image>();
         }
         
         protected abstract void InitializeImage();
         
         public virtual void OnBeginDrag(PointerEventData eventData)
         {
-            Debug.Log("On begin drag");
             _isDragging = true;
-            ItemImage.raycastTarget = false;
             _isPointerDown = false;
+            
+            _itemImage.raycastTarget = false;
             dragParent = transform.parent;
-            transform.SetParent(dragParent);
+            transform.SetParent(transform.root);
         }
         
         public async void OnPointerDown(PointerEventData eventData)
@@ -56,9 +57,9 @@ namespace Components
 
         public virtual void OnEndDrag(PointerEventData eventData)
         {
-            ItemImage.raycastTarget = true;
+            _itemImage.raycastTarget = true;
+            _isDragging = false;
             transform.SetParent(dragParent);
-            _isDragging = true;
         }
 
         private async Task WaitBeforeClick()

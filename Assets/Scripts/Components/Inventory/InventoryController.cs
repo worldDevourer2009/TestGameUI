@@ -1,78 +1,68 @@
 using System.Linq;
+using Factories;
+using UnityEngine;
 
 namespace Components
 {
     public class InventoryController : IInventory
     {
         private readonly SlotHandler[] _slots;
+        private readonly ICreateItem _createItem;
 
-        public InventoryController(SlotHandler[] slots)
+        public InventoryController(SlotHandler[] slots, ICreateItem createItem)
         {
             _slots = slots;
+            _createItem = createItem;
         }
 
         public void Store(StorableObjectComponent storable, int count = 1)
         {
-            if (!HasEnoughSpace()) return;
+            var itemType = storable.GetItemConfig().ItemType;
+            var maxStack = storable.GetItemConfig().MaxStackCount;
             
-            foreach (var cell in _slots)
-            {
-                var item = cell.GetComponentInChildren<StorableObjectComponent>();
-                if (item == null || item.GetItemConfig().ItemType != storable.GetItemConfig().ItemType) continue;
-                
-                var maxStack = item.GetItemConfig().MaxStackCount;
-                item.Count += count;
-                    
-                if (item.Count > maxStack)
-                    item.Count = maxStack;
-                    
-                item.RefreshCount();
-                return;
-            }
-            
-            foreach (var cell in _slots)
-            {
-                var item = cell.GetComponentInChildren<StorableObjectComponent>();
-                if (item != null) continue;
-                
-                storable.transform.SetParent(cell.transform); 
-                storable.Count = count; 
-                storable.RefreshCount();
-                return;
-            }
-        }
-
-        public bool HasEnoughSpace()
-        {
-            return _slots
-                .Any(item => item
-                    .GetComponentInChildren(typeof(StorableObjectComponent)) == null);
-        }
-
-        public StorableObjectComponent CanTake(SlotHandler slot)
-        {
-            var item = slot.GetComponentInChildren<StorableObjectComponent>();
-            if (item == null)
-                return null;
-            
-            item.Count--;
-            return item;
-        }
-        
-        public int GetItemCount(ItemType itemType)
-        {
-            int count = 0;
-
             foreach (var slot in _slots)
             {
-                var storedItem = slot.GetComponentInChildren<StorableObjectComponent>();
-                if (storedItem != null && storedItem.GetItemConfig().ItemType == itemType)
-                {
-                    count += storedItem.Count;
-                }
-            }
+                if (count <= 0) break;
 
-            return count;
+                var item = slot.GetComponentInChildren<StorableObjectComponent>();
+                if (item == null || item.GetItemConfig().ItemType != itemType) continue;
+
+                var availableSpace = maxStack - item.Count;
+                if (availableSpace <= 0) continue;
+
+                var addAmount = Mathf.Min(availableSpace, count);
+                item.Count += addAmount;
+                count -= addAmount;
+                item.RefreshCount();
+            }
+            
+            while (count > 0)
+            {
+                var freeSlot = _slots.FirstOrDefault(s => 
+                    s.GetComponentInChildren<StorableObjectComponent>() == null);
+
+                if (freeSlot == null) break;
+
+                var newStack = Mathf.Min(maxStack, count);
+                var newItem = CreateNewItemInstance(itemType, freeSlot.transform);
+                Debug.Log($"Created item {newItem}");
+                newItem.Count = newStack;
+                count -= newStack;
+                newItem.RefreshCount();
+            }
+        }
+        
+        public StorableObjectComponent CreateNewItemInstance(ItemType itemType, Transform parent)
+        {
+            var newItem = _createItem.CreateItemByType(itemType);
+            newItem.transform.SetParent(parent);
+            return newItem;
+        }
+        
+        public SlotHandler GetFreeSlot()
+        {
+            return _slots.FirstOrDefault(s => 
+                s.GetComponentInChildren<StorableObjectComponent>() == null);
         }
 
         public void RemoveItem(StorableObjectComponent storable, int count = 1)
@@ -81,7 +71,7 @@ namespace Components
             {
                 var item = cell.GetComponentInChildren<StorableObjectComponent>();
                 if (item == null || item.GetItemConfig().ItemType != storable.GetItemConfig().ItemType) continue;
-                
+
                 if (item.Count > count)
                 {
                     item.Count -= count;
@@ -90,6 +80,9 @@ namespace Components
                 }
                 
                 count -= item.Count; 
+                item.Count = 0;
+                item.RefreshCount(); 
+                if (count <= 0) return;
             }
         }
     }

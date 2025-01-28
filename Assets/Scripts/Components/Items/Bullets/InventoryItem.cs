@@ -32,15 +32,17 @@ namespace Components
 
         public override void RefreshCount()
         {
-            switch (Count)
+            if (Count <= 0)
             {
-                case 1:
-                    return;
-                case 0:
-                    break;
+                Destroy(gameObject);
+                return;
             }
-            Debug.Log($"Current count for {this.gameObject.name} is {Count}");
-            _countText.text = Count.ToString();
+
+            _countText.text = Count switch
+            {
+                1 => "",
+                _ => Count.ToString()
+            };
         }
 
         protected override void InitializeImage()

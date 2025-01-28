@@ -9,6 +9,7 @@ namespace Installers
         [SerializeField] private PopUpComponent popUpComponent;
         [SerializeField] private BuyButton buyButton;
         [SerializeField] private UseHealthKitButton useHealthKitButton;
+        [SerializeField] private DeleteButton deleteButton;
 
         public override void InstallBindings()
         {
@@ -20,6 +21,11 @@ namespace Installers
             Container
                 .BindInterfacesTo<UseHealthKitButton>()
                 .FromInstance(useHealthKitButton)
+                .AsCached();
+            
+            Container
+                .BindInterfacesTo<DeleteButton>()
+                .FromInstance(deleteButton)
                 .AsCached();
 
             Container.Bind<IClick>()
