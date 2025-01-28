@@ -1,41 +1,96 @@
-using ScriptableObjects;
+using System.Linq;
 
 namespace Components
 {
     public class InventoryController : IInventory
     {
-        private readonly IStorable[] _storables;
-        private readonly InventoryConfig _inventoryConfig;
-        private bool _isFull;
+        private readonly SlotHandler[] _slots;
 
-        public InventoryController(InventoryConfig inventoryConfig)
+        public InventoryController(SlotHandler[] slots)
         {
-            _inventoryConfig = inventoryConfig;
-            _storables = new IStorable[inventoryConfig.InventorySize];
+            _slots = slots;
         }
 
-        public void Store(IStorable storable)
+        public void Store(StorableObjectComponent storable, int count = 1)
         {
-            if (_isFull) return;
+            if (!HasEnoughSpace()) return;
             
-            for (var i = 0; i < _storables.Length; i++)
+            foreach (var cell in _slots)
             {
-                if (_storables[i] != null) continue;
-                _storables[i] = storable;
+                var item = cell.GetComponentInChildren<StorableObjectComponent>();
+                if (item == null || item.GetItemConfig().ItemType != storable.GetItemConfig().ItemType) continue;
+                
+                var maxStack = item.GetItemConfig().MaxStackCount;
+                item.Count += count;
+                    
+                if (item.Count > maxStack)
+                    item.Count = maxStack;
+                    
+                item.RefreshCount();
+                return;
+            }
+            
+            foreach (var cell in _slots)
+            {
+                var item = cell.GetComponentInChildren<StorableObjectComponent>();
+                if (item != null) continue;
+                
+                storable.transform.SetParent(cell.transform); 
+                storable.Count = count; 
+                storable.RefreshCount();
+                return;
             }
         }
 
-        public IStorable Take<T>(IStorable storable)
+        public bool HasEnoughSpace()
         {
-            for (var i = 0; i < _storables.Length; i++)
-            {
-                if(_storables[i] != storable || _storables[i] == default) continue;
-                var item = _storables[i];
-                _storables[i] = null;
-                return item;
-            }
+            return _slots
+                .Any(item => item
+                    .GetComponentInChildren(typeof(StorableObjectComponent)) == null);
+        }
+
+        public StorableObjectComponent CanTake(SlotHandler slot)
+        {
+            var item = slot.GetComponentInChildren<StorableObjectComponent>();
+            if (item == null)
+                return null;
             
-            return default;
+            item.Count--;
+            return item;
+        }
+        
+        public int GetItemCount(ItemType itemType)
+        {
+            int count = 0;
+
+            foreach (var slot in _slots)
+            {
+                var storedItem = slot.GetComponentInChildren<StorableObjectComponent>();
+                if (storedItem != null && storedItem.GetItemConfig().ItemType == itemType)
+                {
+                    count += storedItem.Count;
+                }
+            }
+
+            return count;
+        }
+
+        public void RemoveItem(StorableObjectComponent storable, int count = 1)
+        {
+            foreach (var cell in _slots)
+            {
+                var item = cell.GetComponentInChildren<StorableObjectComponent>();
+                if (item == null || item.GetItemConfig().ItemType != storable.GetItemConfig().ItemType) continue;
+                
+                if (item.Count > count)
+                {
+                    item.Count -= count;
+                    item.RefreshCount();
+                    return;
+                }
+                
+                count -= item.Count; 
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Installers
         public override void InstallBindings()
         {
             Container
-                .BindInterfacesTo<PlayerUIUIController>()
+                .BindInterfacesTo<PlayerUIController>()
                 .AsSingle();
 
             Container

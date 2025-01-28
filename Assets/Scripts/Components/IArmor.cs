@@ -1,13 +1,13 @@
-using System;
-
 namespace Components
 {
     public interface IArmor
     {
-        event Action<float> OnChangeArmor;
-        void SetArmor(float armor);
+        void SetArmorHead(float armor);
+        void SetArmorBody(float armor);
         float GetArmor();
-        void IncreaseArmor(float armor);
-        void DecreaseArmor(float armor);
+        void IncreaseArmorHead(float armor);
+        void DecreaseArmorHead(float armor);
+        void IncreaseArmorBody(float armor);
+        void DecreaseArmorBody(float armor);
     }
 }

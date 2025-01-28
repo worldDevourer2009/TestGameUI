@@ -12,8 +12,8 @@ namespace Views
     {
         [SerializeField] private Image hpImage;
         [SerializeField] private float fillSpeed;
-        [SerializeField] public TextMeshProUGUI armorHead;
-        [SerializeField] public TextMeshProUGUI armorBody;
+        [SerializeField] private TextMeshProUGUI armorHead;
+        [SerializeField] private TextMeshProUGUI armorBody;
         
         private IPlayerUIController _playerUIController;
         private Tween _tween;

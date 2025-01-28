@@ -4,6 +4,6 @@ namespace Signals
 {
     public class ModelServiceSignal
     {
-        public IModel PlayerModel;
+        public IPlayerModel PlayerPlayerModel;
     }
 }

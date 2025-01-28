@@ -1,5 +1,6 @@
 using Components;
 using Models;
+using Player;
 using ScriptableObjects;
 using UnityEngine;
 using Zenject;
@@ -32,6 +33,11 @@ namespace Installers
                 .Bind(typeof(IDamagable))
                 .To<DamagableComponent>()
                 .AsSingle();
+
+            Container
+                .BindInterfacesTo<PlayerController>()
+                .AsSingle()
+                .NonLazy();
 
             Container
                 .BindInterfacesTo<PlayerModel>()

@@ -1,52 +1,51 @@
 using System;
-using Components;
+using Player;
 using Signals;
+using UnityEngine;
 using Zenject;
 
 namespace Models
 {
-    public class PlayerModel : IModel, IInitializable, IDisposable
+    public class PlayerModel : IPlayerModel, IInitializable, IDisposable
     {
         private readonly SignalBus _signalBus;
-        private readonly IDamagable _damagable;
-        private readonly IHealth _health;
-        private readonly IArmor _armor;
+        private readonly IPlayerController _playerController;
 
-        public PlayerModel(SignalBus signalBus, IDamagable damagable, IHealth health, IArmor armor)
+        public PlayerModel(SignalBus signalBus, IPlayerController playerController)
         {
             _signalBus = signalBus;
-            _damagable = damagable;
-            _health = health;
-            _armor = armor;
+            _playerController = playerController;
         }
 
         public void Initialize()
         {
-            _signalBus.Fire(new ModelServiceSignal {PlayerModel = this});
+            _signalBus.Fire(new ModelServiceSignal {PlayerPlayerModel = this});
             
-            _damagable.OnTakenDamage += HandleDamage;
-            _health.OnHeal += HandleHeal;
-            _armor.OnChangeArmor += HandleArmor;
+            _playerController.Damage += HandleDamage;
+            _playerController.Heal += HandleHeal;
+            _playerController.Armor += HandleArmor;
+            
+            Debug.Log("Player Model");
         }
 
         public void IncreaseHealth(float hp)
         {
-            _health.IncreaseHealth(hp);
+            _playerController.IncreaseHealth(hp);
         }
 
         public void TakeDamage(float damage)
         {
-            _damagable.TakeDamage(damage);
+            _playerController.TakeDamage(damage);
         }
 
         public void SetArmorHead(float armor)
         {
-            _armor.IncreaseArmor(armor);
+            _playerController.SetArmorHead(armor);
         }
 
         public void SetArmorBody(float armor)
         {
-            _armor.IncreaseArmor(armor);
+            _playerController.SetArmorBody(armor);
         }
 
         private void HandleArmor(float amount)
@@ -66,19 +65,19 @@ namespace Models
         
         public float GetMaxHealth()
         {
-            return _health.GetMaxHealth();
+            return _playerController.MaxHealth;
         }
 
         public float GetCurrentHealth()
         {
-            return _health.GetCurrentHealth();
+            return _playerController.CurrentHealth;
         }
 
         public void Dispose()
         {
-            _damagable.OnTakenDamage -= HandleDamage;
-            _health.OnHeal -= HandleHeal;
-            _armor.OnChangeArmor -= HandleArmor;
+            _playerController.Damage -= HandleDamage;
+            _playerController.Heal -= HandleHeal;
+            _playerController.Armor -= HandleArmor;
         }
     }
 }

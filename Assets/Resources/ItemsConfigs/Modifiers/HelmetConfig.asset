@@ -9,8 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 274e1630838641ddac17e6d5383277ec, type: 3}
+  m_Script: {fileID: 11500000, guid: ad134e9d925544f3bf4d6dce7cd2ce1a, type: 3}
   m_Name: HelmetConfig
   m_EditorClassIdentifier: 
-  statModifierValue: 3
-  type: 1
+  itemImage: {fileID: 21300000, guid: e6d58fd0489f2ee4392434815d69bed4, type: 3}
+  type: 3
+  stackable: 0
+  itemModifierValue: 10
+  maxStackCount: 1
+  weight: 1

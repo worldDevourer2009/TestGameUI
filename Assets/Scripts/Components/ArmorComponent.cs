@@ -5,40 +5,48 @@ namespace Components
     public class ArmorComponent : IArmor
     {
         public event Action<float> OnChangeArmor = delegate { };
-        private float _currentArmor;
+        private float _currentArmorHead;
+        private float _currentArmorBody;
 
         public ArmorComponent()
         {
         }
 
-        public void SetArmor(float armor)
+        public void SetArmorHead(float armor)
         {
-            _currentArmor = armor;
-            OnChangeArmor?.Invoke(_currentArmor);
+            _currentArmorHead = armor;
+            OnChangeArmor?.Invoke(_currentArmorHead);
         }
 
-        public void IncreaseArmor(float armor)
+        public void SetArmorBody(float armor)
         {
-            _currentArmor += armor;
-            OnChangeArmor?.Invoke(_currentArmor);
-        }
-
-        public void DecreaseArmor(float armor)
-        {
-            _currentArmor -= armor;
-            if (_currentArmor < 0)
-            {
-                _currentArmor = 0;
-                OnChangeArmor?.Invoke(_currentArmor);
-                return;
-            }
-            
-            OnChangeArmor?.Invoke(_currentArmor);
+            _currentArmorBody = armor;
+            OnChangeArmor?.Invoke(_currentArmorBody);
         }
         
         public float GetArmor()
         {
-            return _currentArmor;
+            return _currentArmorBody + _currentArmorHead;
+        }
+
+        public void IncreaseArmorHead(float armor)
+        {
+            _currentArmorHead = armor;
+        }
+
+        public void DecreaseArmorHead(float armor)
+        {
+            _currentArmorHead = armor;
+        }
+
+        public void IncreaseArmorBody(float armor)
+        {
+            _currentArmorBody = armor;
+        }
+
+        public void DecreaseArmorBody(float armor)
+        {
+            _currentArmorBody = armor;
         }
     }
 }

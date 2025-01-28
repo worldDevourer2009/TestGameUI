@@ -13,6 +13,5 @@ namespace ScriptableObjects
         [SerializeField] private GunType gunType;
         [SerializeField] private float gunDamage;
         [SerializeField] private int consumable;
-        
     }
 }
