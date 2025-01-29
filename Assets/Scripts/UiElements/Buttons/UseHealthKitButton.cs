@@ -3,6 +3,7 @@ using Player;
 using ScriptableObjects;
 using Signals;
 using System;
+using Controllers;
 using UnityEngine;
 using Zenject;
 
@@ -15,11 +16,11 @@ namespace UiElements
         private InventoryItem _currentItem;
         
         private SignalBus _signalBus;
-        private IPlayerController _playerController;
+        private IPlayerUIController _playerController;
         private IInventory _inventory;
 
         [Inject]
-        public void Construct(SignalBus signalBus, IInventory inventory, IPlayerController playerController)
+        public void Construct(SignalBus signalBus, IInventory inventory, IPlayerUIController playerController)
         {
             _signalBus = signalBus;
             _inventory = inventory;
@@ -43,7 +44,7 @@ namespace UiElements
         public void Click()
         {
             if (_itemConfig.ItemType != ItemType.HealthKit) return;
-            _playerController.IncreaseHealth(_itemConfig.ItemModifierValue);
+            _playerController.IncreasePlayerHealth(_itemConfig.ItemModifierValue);
             _inventory.RemoveItem(_currentItem);
             OnClick?.Invoke();
         }

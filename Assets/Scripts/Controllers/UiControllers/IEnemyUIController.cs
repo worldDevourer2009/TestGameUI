@@ -5,7 +5,10 @@ namespace Controllers
     public interface IEnemyUIController
     {
         event Action<float> TakenDamage;
+        event Action<float> Heal;
         void DecreaseEnemyHealth(float value);
         void IncreaseEnemyHealth(float value);
+        float GetMaxHealth();
+        float GetCurrentHealth();
     }
 }

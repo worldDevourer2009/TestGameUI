@@ -1,10 +1,12 @@
 using System;
 using Components;
+using Signals;
 using UnityEngine;
+using Zenject;
 
 namespace Player
 {
-    public class PlayerController : IPlayerController
+    public class PlayerController : IPlayerController, IInitializable
     {
         public float MaxHealth => _health.GetMaxHealth();
         public float CurrentHealth => _health.GetCurrentHealth();
@@ -12,18 +14,30 @@ namespace Player
         public event Action<float> Damage = delegate { };
         public event Action<float> Heal = delegate { };
         public event Action<float> Armor = delegate { };
-        
+
+        private readonly SignalBus _signalBus;
         private readonly IDamagable _damagable;
         private readonly IHealth _health;
         private readonly IArmor _armor;
 
-        public PlayerController(IDamagable damagable, IHealth health, IArmor armor)
+        public PlayerController(SignalBus signalBus, IDamagable damagable, IHealth health, IArmor armor)
         {
+            _signalBus = signalBus;
             _damagable = damagable;
             _health = health;
             _armor = armor;
         }
         
+        public void Initialize()
+        {
+            _health.OnDeath += HandleDeath;
+        }
+
+        private void HandleDeath(bool isDead)
+        {
+            _signalBus.Fire(new PlayerDeathSignal {IsDead = isDead});
+        }
+
         public void IncreaseHealth(float hp)
         {
             Debug.Log($"Increasing player healh to {hp}");

@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 3166973245494974919}
   - component: {fileID: 9101495540426543530}
   - component: {fileID: 6634586195507543691}
-  - component: {fileID: 5683484888744531333}
+  - component: {fileID: -2032898037890225101}
   m_Layer: 5
   m_Name: "Bullet_9\u044518mm"
   m_TagString: Untagged
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5683484888744531333
+--- !u!114 &-2032898037890225101
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

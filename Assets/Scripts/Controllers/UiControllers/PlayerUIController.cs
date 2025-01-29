@@ -14,15 +14,14 @@ namespace Controllers
         public event Action<float> Armor;
 
         private readonly SignalBus _signalBus;
-        private readonly IPlayerModel _playerModel;
         
+        private IPlayerModel _playerModel;
         private float _maxHealth;
         private float _currentHealth;
 
-        public PlayerUIController(SignalBus signalBus, IPlayerModel playerModel)
+        public PlayerUIController(SignalBus signalBus)
         {
             _signalBus = signalBus;
-            _playerModel = playerModel;
         }
 
         public void Initialize()
@@ -57,6 +56,7 @@ namespace Controllers
         {
             var model = modelSignal.PlayerPlayerModel;
             if (model == null) return;
+            _playerModel = model;
             
             _maxHealth = _playerModel.GetMaxHealth();
             _currentHealth = _playerModel.GetCurrentHealth();

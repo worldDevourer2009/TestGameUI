@@ -36,6 +36,12 @@ public class ServiceInstaller : ScriptableObjectInstaller<ServiceInstaller>
 
         Container
             .DeclareSignal<ArmorAddedSignal>();
+
+        Container
+            .DeclareSignal<SelectedGunSignal>();
+
+        Container
+            .DeclareSignal<PlayerFiredSignal>();
     }
 
     private void BindSignalBus()

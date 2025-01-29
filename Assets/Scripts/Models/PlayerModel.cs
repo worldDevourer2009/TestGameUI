@@ -15,12 +15,12 @@ namespace Models
         {
             _signalBus = signalBus;
             _playerController = playerController;
+            
+            _signalBus.Fire(new ModelServiceSignal {PlayerPlayerModel = this});
         }
 
         public void Initialize()
         {
-            _signalBus.Fire(new ModelServiceSignal {PlayerPlayerModel = this});
-            
             _playerController.Damage += HandleDamage;
             _playerController.Heal += HandleHeal;
             _playerController.Armor += HandleArmor;

@@ -21,9 +21,9 @@ namespace Spawners
             var freeSlot = _inventory.GetFreeSlot();
             Debug.Log("Spawning item");
 
-            var newItem = _inventory.CreateNewItemInstance(type, freeSlot.transform);
+            var newItem = _inventory.CreateNewItem(type, freeSlot.transform);
             newItem.Count = newItem.GetItemConfig().MaxStackCount;
-            newItem.RefreshCount();
+            newItem.UpdateCount();
         }
 
         public void Tick()

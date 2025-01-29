@@ -1,3 +1,4 @@
+using Components;
 using ScriptableObjects;
 using Signals;
 using TMPro;
@@ -5,8 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace Components
-{
+
     public class InventoryItem : StorableObjectComponent
     {
         public ItemType ItemType => itemConfig.ItemType;
@@ -29,7 +29,7 @@ namespace Components
             return itemConfig;
         }
 
-        public override void RefreshCount()
+        public override void UpdateCount()
         {
             if (Count <= 0)
             {
@@ -49,7 +49,7 @@ namespace Components
             var image = itemConfig.ItemImage;
             _itemImage.sprite = image;
             Count = 1;
-            RefreshCount();
+            UpdateCount();
 
             OnItemClicked += HandleClicked;
         }
@@ -65,4 +65,3 @@ namespace Components
             OnItemClicked -= HandleClicked;
         }
     }
-}

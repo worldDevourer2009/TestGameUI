@@ -15,6 +15,6 @@ MonoBehaviour:
   itemImage: {fileID: 21300000, guid: cfe599772e2a21b4194fa7c9ec1afaa9, type: 3}
   type: 1
   stackable: 1
-  itemModifierValue: 0
+  itemModifierValue: 10
   maxStackCount: 50
   weight: 0.01

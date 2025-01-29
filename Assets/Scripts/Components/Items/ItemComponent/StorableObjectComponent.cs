@@ -47,7 +47,7 @@ namespace Components
             return default;
         }
         
-        public virtual void RefreshCount() {}
+        public virtual void UpdateCount() {}
         
         public virtual void OnDrag(PointerEventData eventData)
         {

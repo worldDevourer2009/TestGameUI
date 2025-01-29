@@ -26,6 +26,10 @@ namespace Installers
                 .AsSingle();
             
             Container
+                .BindInterfacesTo<ItemFactory>()
+                .AsSingle();
+            
+            Container
                 .BindInterfacesTo<InventoryController>()
                 .AsSingle()
                 .WithArguments(slots);
@@ -34,11 +38,6 @@ namespace Installers
                 .BindInterfacesTo<InventoryItem>()
                 .FromComponentsInHierarchy()
                 .AsCached();
-
-            Container
-                .BindInterfacesTo<ItemFactory>()
-                .AsSingle()
-                .WithArguments(itemsPrefabs);
 
             Container
                 .BindInterfacesTo<ItemSpawner>()

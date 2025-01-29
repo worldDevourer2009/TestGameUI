@@ -7,8 +7,10 @@ namespace ScriptableObjects
     {
         public float MaxHealth => maxHealth;
         public float CurrentHealth => currentHealth;
+        public float Damage => damage;
         
         [SerializeField] private float maxHealth;
         [SerializeField] private float currentHealth;
+        [SerializeField] private float damage;
     }
 }

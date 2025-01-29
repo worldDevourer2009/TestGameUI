@@ -76,7 +76,7 @@ namespace UiElements
             
             if (equippedItem != null)
             {
-                var item = _inventory.CreateNewItemInstance(equippedItem.itemType, transform);
+                var item = _inventory.CreateNewItem(equippedItem.itemType, transform);
                 TrySetItem(item);
             }
         }

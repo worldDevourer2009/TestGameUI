@@ -1,5 +1,6 @@
 using System.Linq;
 using Factories;
+using ModestTree;
 using SavesManagement;
 using UnityEngine;
 
@@ -16,16 +17,24 @@ namespace Components
         {
             _slots = slots;
             _createItem = createItem;
+            Debug.Log($"Constrcut inventory and {_createItem == null}");
         }
 
-        public void Store(StorableObjectComponent storable, int count = 1)
+        public void GetItemFromInventoryByType(ItemType type, int amount = 1)
+        {
+            _slots
+                .Select(x => x.GetComponentInChildren<StorableObjectComponent>())
+                .FirstOrDefault(x => x != null && x.GetItemConfig().ItemType == type);
+        }
+
+        public void Store(StorableObjectComponent storable, int amount = 1)
         {
             var itemType = storable.GetItemConfig().ItemType;
             var maxStack = storable.GetItemConfig().MaxStackCount;
             
             foreach (var slot in _slots)
             {
-                if (count <= 0) break;
+                if (amount <= 0) break;
 
                 var item = slot.GetComponentInChildren<StorableObjectComponent>();
                 if (item == null || item.GetItemConfig().ItemType != itemType) continue;
@@ -33,29 +42,29 @@ namespace Components
                 var availableSpace = maxStack - item.Count;
                 if (availableSpace <= 0) continue;
 
-                var addAmount = Mathf.Min(availableSpace, count);
+                var addAmount = Mathf.Min(availableSpace, amount);
                 item.Count += addAmount;
-                count -= addAmount;
-                item.RefreshCount();
+                amount -= addAmount;
+                item.UpdateCount();
             }
             
-            while (count > 0)
+            while (amount > 0)
             {
-                var freeSlot = _slots.FirstOrDefault(s => 
-                    s.GetComponentInChildren<StorableObjectComponent>() == null);
+                var freeSlot = _slots.FirstOrDefault(x => 
+                    x.GetComponentInChildren<StorableObjectComponent>() == null);
 
                 if (freeSlot == null) break;
 
-                var newStack = Mathf.Min(maxStack, count);
-                var newItem = CreateNewItemInstance(itemType, freeSlot.transform);
+                var newStack = Mathf.Min(maxStack, amount);
+                var newItem = CreateNewItem(itemType, freeSlot.transform);
                 Debug.Log($"Created item {newItem}");
                 newItem.Count = newStack;
-                count -= newStack;
-                newItem.RefreshCount();
+                amount -= newStack;
+                newItem.UpdateCount();
             }
         }
         
-        public StorableObjectComponent CreateNewItemInstance(ItemType itemType, Transform parent)
+        public StorableObjectComponent CreateNewItem(ItemType itemType, Transform parent)
         {
             var newItem = _createItem.CreateItemByType(itemType);
             newItem.transform.SetParent(parent);
@@ -64,28 +73,28 @@ namespace Components
         
         public SlotHandler GetFreeSlot()
         {
-            return _slots.FirstOrDefault(s => 
-                s.GetComponentInChildren<StorableObjectComponent>() == null);
+            return _slots.FirstOrDefault(x => 
+                x.GetComponentInChildren<StorableObjectComponent>() == null);
         }
 
-        public void RemoveItem(StorableObjectComponent storable, int count = 1)
+        public void RemoveItem(StorableObjectComponent storable, int amount = 1)
         {
-            foreach (var cell in _slots)
+            foreach (var slot in _slots)
             {
-                var item = cell.GetComponentInChildren<StorableObjectComponent>();
+                var item = slot.GetComponentInChildren<StorableObjectComponent>();
                 if (item == null || item.GetItemConfig().ItemType != storable.GetItemConfig().ItemType) continue;
 
-                if (item.Count > count)
+                if (item.Count > amount)
                 {
-                    item.Count -= count;
-                    item.RefreshCount();
+                    item.Count -= amount;
+                    item.UpdateCount();
                     return;
                 }
                 
-                count -= item.Count; 
+                amount -= item.Count; 
                 item.Count = 0;
-                item.RefreshCount(); 
-                if (count <= 0) return;
+                item.UpdateCount(); 
+                if (amount <= 0) return;
             }
         }
         
@@ -93,21 +102,19 @@ namespace Components
         {
             gameData.inventoryData.slots.Clear();
             
-            Debug.Log("Saving inventory");
-            
-            for (var i = 0; i < _slots.Length; i++)
+            foreach (var slot in _slots)
             {
-                var item = _slots[i].GetComponentInChildren<StorableObjectComponent>();
-                if (item != null)
+                var item = slot.GetComponentInChildren<StorableObjectComponent>();
+                
+                if (item == null) continue;
+                
+                Debug.Log($"Item to save {item.GetItemConfig().ItemType}");
+                gameData.inventoryData.slots.Add(new InventorySlotData
                 {
-                    Debug.Log($"Item to save {item.GetItemConfig().ItemType}");
-                    gameData.inventoryData.slots.Add(new InventorySlotData
-                    {
-                        itemType = item.GetItemConfig().ItemType,
-                        amount = item.Count,
-                        slotIndex = i
-                    });
-                }
+                    itemType = item.GetItemConfig().ItemType,
+                    amount = item.Count,
+                    slotIndex = _slots.IndexOf(slot)
+                });
             }
         }
 
@@ -116,10 +123,8 @@ namespace Components
             foreach (var slot in _slots)
             {
                 var item = slot.GetComponentInChildren<StorableObjectComponent>();
-                if (item != null)
-                {
-                    Object.Destroy(item.gameObject);
-                }
+                if (item == null) continue;
+                Object.Destroy(item.gameObject);
             }
             
             foreach (var slotData in gameData.inventoryData.slots)
@@ -127,9 +132,9 @@ namespace Components
                 if (slotData.slotIndex < 0 || slotData.slotIndex >= _slots.Length) continue;
                 
                 var slot = _slots[slotData.slotIndex];
-                var item = CreateNewItemInstance(slotData.itemType, slot.transform);
+                var item = CreateNewItem(slotData.itemType, slot.transform);
                 item.Count = slotData.amount;
-                item.RefreshCount();
+                item.UpdateCount();
             }
         }
     }

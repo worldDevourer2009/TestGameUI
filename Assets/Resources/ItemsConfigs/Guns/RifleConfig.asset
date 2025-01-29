@@ -12,3 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1447124b2b7e4cb5bdeb9956c7bfcf56, type: 3}
   m_Name: RifleConfig
   m_EditorClassIdentifier: 
+  gunType: 2
+  gunDamage: 10
+  consumable: 3
