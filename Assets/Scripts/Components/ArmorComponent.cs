@@ -1,9 +1,11 @@
 using System;
+using SavesManagement;
 
 namespace Components
 {
-    public class ArmorComponent : IArmor
+    public class ArmorComponent : IArmor, ISaveable
     {
+        public string SaveId => "PlayerArmor";
         public event Action<float> OnChangeArmor = delegate { };
         private float _currentArmorHead;
         private float _currentArmorBody;
@@ -47,6 +49,18 @@ namespace Components
         public void DecreaseArmorBody(float armor)
         {
             _currentArmorBody = armor;
+        }
+        
+        public void SaveData(GameData gameData)
+        {
+            gameData.playerStatsData.armorHead = _currentArmorHead;
+            gameData.playerStatsData.armorBody = _currentArmorBody;
+        }
+
+        public void LoadData(GameData gameData)
+        {
+            SetArmorHead(gameData.playerStatsData.armorHead);
+            SetArmorBody(gameData.playerStatsData.armorBody);
         }
     }
 }

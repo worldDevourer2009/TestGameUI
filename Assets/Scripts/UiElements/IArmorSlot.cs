@@ -5,7 +5,7 @@ namespace UiElements
     public interface IArmorSlot
     {
         ArmorSlotType SlotType { get; }
-        bool TrySetItem(InventoryItem newItem);
+        bool TrySetItem(StorableObjectComponent newItem);
         void ReturnCurrentItem();
     }
 }

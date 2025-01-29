@@ -1,11 +1,14 @@
 using System.Linq;
 using Factories;
+using SavesManagement;
 using UnityEngine;
 
 namespace Components
 {
-    public class InventoryController : IInventory
+    public class InventoryController : IInventory, ISaveable
     {
+        public string SaveId => "Inventory";
+        
         private readonly SlotHandler[] _slots;
         private readonly ICreateItem _createItem;
 
@@ -83,6 +86,50 @@ namespace Components
                 item.Count = 0;
                 item.RefreshCount(); 
                 if (count <= 0) return;
+            }
+        }
+        
+        public void SaveData(GameData gameData)
+        {
+            gameData.inventoryData.slots.Clear();
+            
+            Debug.Log("Saving inventory");
+            
+            for (var i = 0; i < _slots.Length; i++)
+            {
+                var item = _slots[i].GetComponentInChildren<StorableObjectComponent>();
+                if (item != null)
+                {
+                    Debug.Log($"Item to save {item.GetItemConfig().ItemType}");
+                    gameData.inventoryData.slots.Add(new InventorySlotData
+                    {
+                        itemType = item.GetItemConfig().ItemType,
+                        amount = item.Count,
+                        slotIndex = i
+                    });
+                }
+            }
+        }
+
+        public void LoadData(GameData gameData)
+        {
+            foreach (var slot in _slots)
+            {
+                var item = slot.GetComponentInChildren<StorableObjectComponent>();
+                if (item != null)
+                {
+                    Object.Destroy(item.gameObject);
+                }
+            }
+            
+            foreach (var slotData in gameData.inventoryData.slots)
+            {
+                if (slotData.slotIndex < 0 || slotData.slotIndex >= _slots.Length) continue;
+                
+                var slot = _slots[slotData.slotIndex];
+                var item = CreateNewItemInstance(slotData.itemType, slot.transform);
+                item.Count = slotData.amount;
+                item.RefreshCount();
             }
         }
     }

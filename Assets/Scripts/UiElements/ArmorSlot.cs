@@ -1,18 +1,21 @@
 using System.Collections.Generic;
+using System.Linq;
 using Components;
+using SavesManagement;
 using TMPro;
 using UnityEngine;
 using Zenject;
 
 namespace UiElements
 {
-    public class ArmorSlot : MonoBehaviour, IArmorSlot
+    public class ArmorSlot : MonoBehaviour, IArmorSlot, ISaveable
     {
+        public string SaveId => $"ArmorSlot_{armorSlotType}";
         public ArmorSlotType SlotType => armorSlotType;
         [SerializeField] private ArmorSlotType armorSlotType;
         [SerializeField] private TextMeshProUGUI armorCount;
         private IInventory _inventory;
-        private InventoryItem _currentItem;
+        private StorableObjectComponent _currentItem;
 
         [Inject]
         public void Construct(IInventory inventory)
@@ -20,9 +23,9 @@ namespace UiElements
             _inventory = inventory;
         }
 
-        public bool TrySetItem(InventoryItem newItem)
+        public bool TrySetItem(StorableObjectComponent newItem)
         {
-            Debug.Log($"Passed item {newItem.ItemType}");
+            Debug.Log($"Passed item {newItem.GetItemConfig().ItemType}");
             var itemSlotType = ArmorTypeMapper.GetArmorSlotTypeForItem(newItem.GetItemConfig().ItemType);
             Debug.Log($"Item slot type {itemSlotType}");
 
@@ -46,12 +49,36 @@ namespace UiElements
             Debug.Log($"Transfrom set is {_currentItem.transform.parent.name}");
             return true;
         }
-        
+
         public void ReturnCurrentItem()
         {
             Debug.Log($"Hello {_currentItem} and {_currentItem.Count}");
             _inventory.Store(_currentItem, _currentItem.Count);
             _currentItem = null;
+        }
+        
+        public void SaveData(GameData gameData)
+        {
+            if (_currentItem != null)
+            {
+                gameData.inventoryData.equippedItems.Add(new EquippedItemData
+                {
+                    itemType = _currentItem.GetItemConfig().ItemType,
+                    slotType = armorSlotType
+                });
+            }
+        }
+
+        public void LoadData(GameData gameData)
+        {
+            var equippedItem = gameData.inventoryData.equippedItems
+                .FirstOrDefault(e => e.slotType == armorSlotType);
+            
+            if (equippedItem != null)
+            {
+                var item = _inventory.CreateNewItemInstance(equippedItem.itemType, transform);
+                TrySetItem(item);
+            }
         }
     }
     

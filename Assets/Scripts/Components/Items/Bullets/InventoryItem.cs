@@ -14,7 +14,6 @@ namespace Components
 
         private SignalBus _signalBus;
         private TextMeshProUGUI _countText;
-        private Image _itemImage;
         
         [Inject]
         public void Construct(SignalBus signalBus)
@@ -49,9 +48,6 @@ namespace Components
         {
             var image = itemConfig.ItemImage;
             _itemImage.sprite = image;
-            
-            Debug.Log($"Image is {_itemImage.name} and sprite name is {itemConfig.ItemImage.name}");
-            
             Count = 1;
             RefreshCount();
 
@@ -61,7 +57,6 @@ namespace Components
         private void HandleClicked(bool draging)
         {
             if (draging) return;
-            Debug.Log("Hello");
             _signalBus.Fire(new ItemClickedSignal {Item = this});
         }
 

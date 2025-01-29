@@ -1,10 +1,12 @@
 using System;
+using SavesManagement;
 using UnityEngine;
 
 namespace Components
 {
-    public class HealthComponent : IHealth
+    public class HealthComponent : IHealth, ISaveable
     {
+        public string SaveId => "PlayerHealth";
         public event Action<bool> OnDeath = delegate  { };
         public event Action<float> OnHeal = delegate { };
         private readonly float _maxHealth;
@@ -15,6 +17,7 @@ namespace Components
         public HealthComponent(float maxHealth)
         {
             _maxHealth = maxHealth;
+            _currentHealth = maxHealth;
         }
 
         public void SetHealth(float hp)
@@ -61,6 +64,19 @@ namespace Components
         public float GetCurrentHealth()
         {
             return _currentHealth;
+        }
+        
+        public void SaveData(GameData gameData)
+        {
+            gameData.playerStatsData.health = _currentHealth;
+        }
+
+        public void LoadData(GameData gameData)
+        {
+            if (gameData.playerStatsData.health > 0)
+            {
+                SetHealth(gameData.playerStatsData.health);
+            }
         }
     }
 }

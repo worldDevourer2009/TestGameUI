@@ -26,8 +26,7 @@ namespace Installers
                 .AsSingle();
             
             Container
-                .Bind<IInventory>()
-                .To<InventoryController>()
+                .BindInterfacesTo<InventoryController>()
                 .AsSingle()
                 .WithArguments(slots);
 

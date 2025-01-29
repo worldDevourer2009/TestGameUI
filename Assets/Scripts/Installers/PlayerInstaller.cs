@@ -19,19 +19,16 @@ namespace Installers
                 .AsSingle();
             
             Container
-                .Bind(typeof(IArmor))
-                .To<ArmorComponent>()
+                .BindInterfacesTo<ArmorComponent>()
                 .AsSingle();
 
             Container
-                .Bind(typeof(IHealth))
-                .To<HealthComponent>()
+                .BindInterfacesTo<HealthComponent>()
                 .AsSingle()
                 .WithArguments(playerConfig.MaxPlayerHealth);
 
             Container
-                .Bind(typeof(IDamagable))
-                .To<DamagableComponent>()
+                .BindInterfacesTo<DamagableComponent>()
                 .AsSingle();
 
             Container

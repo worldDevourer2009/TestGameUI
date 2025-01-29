@@ -13,7 +13,7 @@ namespace Components
         public int Count { get; set; }
         
         public Transform dragParent;
-        private Image _itemImage;
+        protected Image _itemImage;
         
         private bool _isDragging;
         private bool _isPointerDown;

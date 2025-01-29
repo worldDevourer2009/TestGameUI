@@ -1,7 +1,6 @@
-using Components;
-using Models;
-using Player;
+using SavesManagement;
 using ScriptableObjects;
+using Services.SavesManagement.SavePersistentDataManager;
 using Signals;
 using UnityEngine;
 using Zenject;
@@ -15,37 +14,7 @@ public class ServiceInstaller : ScriptableObjectInstaller<ServiceInstaller>
     {
         BindSignalBus();
         BindPlayerSignals();
-        
-        Container
-            .Bind<PlayerConfig>()
-            .FromInstance(playerConfig)
-            .AsSingle();
-            
-        Container
-            .Bind(typeof(IArmor))
-            .To<ArmorComponent>()
-            .AsSingle();
-
-        Container
-            .Bind(typeof(IHealth))
-            .To<HealthComponent>()
-            .AsSingle()
-            .WithArguments(playerConfig.MaxPlayerHealth);
-
-        Container
-            .Bind(typeof(IDamagable))
-            .To<DamagableComponent>()
-            .AsSingle();
-
-        Container
-            .BindInterfacesTo<PlayerController>()
-            .AsSingle()
-            .NonLazy();
-
-        Container
-            .BindInterfacesTo<PlayerModel>()
-            .AsSingle()
-            .NonLazy();
+        BindSaves();
     }
 
     private void BindPlayerSignals()
@@ -73,5 +42,17 @@ public class ServiceInstaller : ScriptableObjectInstaller<ServiceInstaller>
     {
         SignalBusInstaller
             .Install(Container);
+    }
+
+    private void BindSaves()
+    {
+        Container.BindInterfacesTo<JsonSerializer>()
+            .AsSingle()
+            .NonLazy();
+        
+        Container
+            .BindInterfacesTo<SaveManager>()
+            .AsSingle()
+            .NonLazy();
     }
 }
