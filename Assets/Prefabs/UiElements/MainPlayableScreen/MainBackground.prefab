@@ -2710,7 +2710,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8105091018223015104, guid: f5416866dd44a43f3b19f6a4bf2a5d75, type: 3}
       propertyPath: m_Name
-      value: Buttons
+      value: '[Buttons]'
       objectReference: {fileID: 0}
     - target: {fileID: 8183301621020233485, guid: f5416866dd44a43f3b19f6a4bf2a5d75, type: 3}
       propertyPath: m_SpriteState.m_DisabledSprite
