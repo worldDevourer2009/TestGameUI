@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using Application = UnityEngine.Device.Application;
 
@@ -56,30 +54,6 @@ namespace SavesManagement
 
             var jsonData = _serializer.Serialize(data);
             File.WriteAllText(filePath, jsonData);
-        }
-
-        //перенос с другого моего проекта
-        public void Delete(string saveName)
-        {
-            var filePath = GetSavePath(saveName);
-            
-            if (!File.Exists(filePath)) return;
-            
-            File.Delete(filePath);
-        }
-
-        //перенос с другого моего проекта
-        public void DeleteAll()
-        {
-            foreach (var filePath in Directory.GetFiles(_path, $"*{_extension}"))
-                File.Delete(filePath);
-        }
-
-        //перенос с другого моего проекта
-        public IEnumerable<string> ShowAllSaves()
-        {
-            return Directory.GetFiles(_path, $"*{_extension}")
-                .Select(Path.GetFileNameWithoutExtension);
         }
         
         private string GetSavePath(string saveName)
