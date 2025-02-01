@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Components;
 using Enemies;
 using Models;
@@ -10,11 +11,18 @@ namespace Installers
     public class EnemyInstaller : MonoInstaller<EnemyInstaller>
     {
         [SerializeField] private EnemyConfig enemyConfig;
+        [SerializeField] private List<ItemType> itemTypes;
+        
         public override void InstallBindings()
         {
             Container
                 .Bind<EnemyConfig>()
                 .FromInstance(enemyConfig)
+                .AsSingle();
+
+            Container
+                .Bind<List<ItemType>>()
+                .FromInstance(itemTypes)
                 .AsSingle();
 
             Container
@@ -30,6 +38,7 @@ namespace Installers
             Container
                 .BindInterfacesTo<EnemyController>()
                 .AsSingle()
+                .WithArguments(itemTypes)
                 .NonLazy();
 
             Container

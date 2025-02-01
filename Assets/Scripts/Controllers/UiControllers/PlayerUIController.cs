@@ -28,6 +28,20 @@ namespace Controllers
         {
             _signalBus.Subscribe<ModelServiceSignal>(InitializeController);
             _signalBus.Subscribe<ArmorAddedSignal>(HandleArmor);
+            _signalBus.Subscribe<EnemyAttackSignal>(HandleOnDamage);
+        }
+
+        private void HandleOnDamage(EnemyAttackSignal evt)
+        {
+            var dmg = evt.Damage;
+            if (dmg == 0)
+            {
+                Debug.Log($"Damage is {evt.Damage}");
+                return;
+            }
+            
+            Debug.Log($"Damage is {evt.Damage}");
+            DecreasePlayerHealth(dmg);
         }
 
         private void HandleArmor(ArmorAddedSignal evt)
@@ -55,7 +69,7 @@ namespace Controllers
         private void InitializeController(ModelServiceSignal modelSignal)
         {
             var model = modelSignal.PlayerPlayerModel;
-            if (model == null) return;
+            Debug.Log("Init model");
             _playerModel = model;
             
             _maxHealth = _playerModel.GetMaxHealth();
@@ -69,7 +83,6 @@ namespace Controllers
         public void DecreasePlayerHealth(float value)
         {
             _playerModel.TakeDamage(value);
-
             _currentHealth = _playerModel.GetCurrentHealth();
             var clampedValue = CalculateClamp(_currentHealth, _maxHealth);
             TakenDamage?.Invoke(clampedValue);

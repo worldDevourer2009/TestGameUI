@@ -25,20 +25,18 @@ namespace Controllers
         public void Initialize()
         {
             _signalBus.Subscribe<EnemyModelSignal>(InitializeController);
+            _signalBus.Subscribe<TakeDamageEnemySignal>(HandleDamage);
         }
 
         private void InitializeController(EnemyModelSignal modelSignal)
         {
             var model = modelSignal.EnemyModel;
-            if (model == null) return;
-
             _enemyModel = model;
             
             _maxHealth = _enemyModel.GetMaxHealth();
             _currentHealth = _enemyModel.GetCurrentHealth();
-            
-            _signalBus.Subscribe<TakeDamageEnemySignal>(HandleDamage);
-            _signalBus.Subscribe<EnemyAttackSignal>(HandleAttack);
+            Heal?.Invoke(_currentHealth);
+            Debug.Log("Init controller");
         }
 
         private void HandleDamage(TakeDamageEnemySignal evt)
@@ -46,11 +44,6 @@ namespace Controllers
             _currentHealth = _enemyModel.GetCurrentHealth();
             var clampedValue = CalculateClamp(_currentHealth, _maxHealth);
             TakenDamage?.Invoke(clampedValue);
-        }
-
-        private void HandleAttack(EnemyAttackSignal evt)
-        {
-            //_signalBus.Fire(new EnemyAttackSignal() {Damage =  });
         }
 
         public void DecreaseEnemyHealth(float value)
@@ -77,8 +70,8 @@ namespace Controllers
 
         public void Dispose()
         {
+            _signalBus.TryUnsubscribe<EnemyModelSignal>(InitializeController);
             _signalBus.TryUnsubscribe<TakeDamageEnemySignal>(HandleDamage);
-            _signalBus.TryUnsubscribe<EnemyAttackSignal>(HandleAttack);
         }
 
         private float CalculateClamp(float current, float max)

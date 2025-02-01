@@ -54,14 +54,14 @@ namespace Player
         {
             Debug.Log($"Setting player armor head up to {armor}");
             _armor.IncreaseArmorHead(armor);
-            Debug.Log($"Current armor is {_armor.GetArmor()}");
+            Debug.Log($"Current armor is {_armor.GetArmorHead()}");
         }
 
         public void SetArmorBody(float armor)
         {
             Debug.Log($"Setting player armor body up to {armor}");
             _armor.IncreaseArmorBody(armor);
-            Debug.Log($"Current armor is {_armor.GetArmor()}");
+            Debug.Log($"Current armor is {_armor.GetArmorBody()}");
         }
     }
 }

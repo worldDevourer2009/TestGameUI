@@ -13,12 +13,14 @@ namespace Installers
         {
             Container
                 .BindInterfacesTo<PlayerUIController>()
-                .AsSingle();
+                .AsSingle()
+                .NonLazy();
 
             Container
                 .BindInterfacesAndSelfTo<PlayerView>()
                 .FromInstance(playerView)
-                .AsSingle();
+                .AsSingle()
+                .NonLazy();
         }
     }
 }

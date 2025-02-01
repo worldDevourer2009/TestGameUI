@@ -1,56 +1,50 @@
 using System.Collections.Generic;
 using Components;
+using Signals;
 using UnityEngine;
 using Zenject;
 
 namespace Spawners
 {
-    public class ItemSpawner : MonoBehaviour, ISpawnItem, ITickable
+    public class ItemSpawner : MonoBehaviour, ISpawnItem, IInitializable
     {
         [SerializeField] private List<ItemType> itemTypes;
+        [SerializeField] private List<ItemType> standardItems;
         private IInventory _inventory;
+        private SignalBus _signalBus;
 
         [Inject]
-        public void Construct(IInventory inventory)
+        public void Construct(IInventory inventory, SignalBus signalBus)
         {
             _inventory = inventory;
+            _signalBus = signalBus;
         }
 
         public void SpawnItem(ItemType type)
         {
             var freeSlot = _inventory.GetFreeSlot();
-            Debug.Log("Spawning item");
-
             var newItem = _inventory.CreateNewItem(type, freeSlot.transform);
             newItem.Count = newItem.GetItemConfig().MaxStackCount;
             newItem.UpdateCount();
         }
-
-        public void Tick()
+        
+        public void Initialize()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-                SpawnItem(ItemType.Cap);
+            _signalBus.Subscribe<EnemyDeathSignal>(HanldeLoot);
+
+            Debug.Log("Init spawner");
             
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-                SpawnItem(ItemType.BallisticVest);
-            
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-                SpawnItem(ItemType.Rifle);
-            
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-                SpawnItem(ItemType.Jacket);
-            
-            if (Input.GetKeyDown(KeyCode.Alpha5))
-                SpawnItem(ItemType.HealthKit);
-            
-            if (Input.GetKeyDown(KeyCode.Alpha6))
-                SpawnItem(ItemType.Gun);
-            
-            if (Input.GetKeyDown(KeyCode.Alpha7))
-                SpawnItem(ItemType.Helmet);
-            
-            if (Input.GetKeyDown(KeyCode.Alpha8))
-                SpawnItem(ItemType.None);
+            foreach (var item in standardItems)
+            {
+                SpawnItem(item);
+            }
+        }
+
+        private void HanldeLoot(EnemyDeathSignal evt)
+        {
+            var loot = evt.Loot;
+            if (loot == default) return;
+            SpawnItem(loot);
         }
     }
 }

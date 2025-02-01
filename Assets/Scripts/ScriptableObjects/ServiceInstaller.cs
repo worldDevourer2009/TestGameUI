@@ -1,3 +1,4 @@
+using Main;
 using SavesManagement;
 using ScriptableObjects;
 using Services.SavesManagement.SavePersistentDataManager;
@@ -12,12 +13,21 @@ public class ServiceInstaller : ScriptableObjectInstaller<ServiceInstaller>
     
     public override void InstallBindings()
     {
+        BindSceneManagement();
         BindSignalBus();
-        BindPlayerSignals();
+        DeclareSignals();
         BindSaves();
     }
 
-    private void BindPlayerSignals()
+    private void BindSceneManagement()
+    {
+        Container
+            .BindInterfacesTo<SceneLoadManager>()
+            .AsSingle()
+            .NonLazy();
+    }
+
+    private void DeclareSignals()
     {
         Container
             .DeclareSignal<TakeDamagePlayerSignal>();
@@ -42,6 +52,24 @@ public class ServiceInstaller : ScriptableObjectInstaller<ServiceInstaller>
 
         Container
             .DeclareSignal<PlayerFiredSignal>();
+
+        Container
+            .DeclareSignal<EnemyModelSignal>();
+
+        Container
+            .DeclareSignal<TakeDamageEnemySignal>();
+
+        Container
+            .DeclareSignal<EnemyAttackSignal>();
+
+        Container
+            .DeclareSignal<PlayerDeathSignal>();
+
+        Container
+            .DeclareSignal<EnemyDeathSignal>();
+
+        Container
+            .DeclareSignal<LoadingCanvasEnableSignal>();
     }
 
     private void BindSignalBus()

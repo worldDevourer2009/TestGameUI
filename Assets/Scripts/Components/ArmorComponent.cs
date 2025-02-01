@@ -25,10 +25,15 @@ namespace Components
             _currentArmorBody = armor;
             OnChangeArmor?.Invoke(_currentArmorBody);
         }
-        
-        public float GetArmor()
+
+        public float GetArmorBody()
         {
-            return _currentArmorBody + _currentArmorHead;
+            return _currentArmorBody;
+        }
+
+        public float GetArmorHead()
+        {
+            return _currentArmorHead;
         }
 
         public void IncreaseArmorHead(float armor)

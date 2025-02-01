@@ -1,9 +1,11 @@
 using System;
 using SavesManagement;
 using UnityEngine;
+using Zenject;
 
 namespace Components
 {
+    [ZenjectAllowDuringValidation]
     public class HealthComponent : IHealth, ISaveable
     {
         public string SaveId => "PlayerHealth";
@@ -44,11 +46,23 @@ namespace Components
             OnHeal?.Invoke(_currentHealth);
         }
 
-        public void DecreaseHealth(float hp)
+        public void DecreaseHealthHead(float hp)
+        {
+            _currentHealth -= hp * (1 + 40f / 100f);
+            
+            Debug.Log($"Decreasing health head to {_currentHealth}");
+            if (_currentHealth > 0) return; 
+            _currentHealth = 0;
+            
+            _isDead = true;
+            OnDeath?.Invoke(_isDead);
+        }
+
+        public void DecreaseHealthBody(float hp)
         {
             _currentHealth -= hp;
             
-            Debug.Log($"Decreasing health to {_currentHealth}");
+            Debug.Log($"Decreasing health body to {_currentHealth}");
             if (_currentHealth > 0) return; 
             _currentHealth = 0;
             
@@ -68,11 +82,15 @@ namespace Components
         
         public void SaveData(GameData gameData)
         {
+            if (gameData == null) return;
+            
             gameData.playerStatsData.health = _currentHealth;
         }
 
         public void LoadData(GameData gameData)
         {
+            if (gameData == null) return;
+            
             if (gameData.playerStatsData.health > 0)
             {
                 SetHealth(gameData.playerStatsData.health);

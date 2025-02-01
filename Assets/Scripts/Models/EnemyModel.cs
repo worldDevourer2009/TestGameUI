@@ -14,12 +14,11 @@ namespace Models
         {
             _signalBus = signalBus;
             _enemyController = enemyController;
-            
-            _signalBus.Fire(new EnemyModelSignal { EnemyModel = this });
         }
 
         public void Initialize()
         {
+            _signalBus.Fire(new EnemyModelSignal { EnemyModel = this });
             _enemyController.OnTakeDamage += TakeDamage;
             _enemyController.OnAttack += HandleAttack;
         }

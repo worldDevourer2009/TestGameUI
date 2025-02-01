@@ -8,6 +8,7 @@ using Zenject;
 
 namespace UiElements
 {
+    [ZenjectAllowDuringValidation]
     public class ArmorSlot : MonoBehaviour, IArmorSlot, ISaveable
     {
         public string SaveId => $"ArmorSlot_{armorSlotType}";
@@ -45,7 +46,7 @@ namespace UiElements
             var config = _currentItem.GetItemConfig();
             Debug.Log($"Transfrom is {transform.gameObject.name}");
             _currentItem.transform.SetParent(transform);
-            armorCount.text = _currentItem.GetItemConfig().ItemModifierValue.ToString();
+            armorCount.text = config.ItemModifierValue.ToString();
             Debug.Log($"Transfrom set is {_currentItem.transform.parent.name}");
             return true;
         }
@@ -59,6 +60,8 @@ namespace UiElements
         
         public void SaveData(GameData gameData)
         {
+            if (gameData.inventoryData.equippedItems == null) return;
+            
             if (_currentItem != null)
             {
                 gameData.inventoryData.equippedItems.Add(new EquippedItemData
@@ -71,8 +74,12 @@ namespace UiElements
 
         public void LoadData(GameData gameData)
         {
+            if (gameData.inventoryData.equippedItems == null) return;
+            
             var equippedItem = gameData.inventoryData.equippedItems
                 .FirstOrDefault(e => e.slotType == armorSlotType);
+            
+            Debug.Log($"Equiped item is {equippedItem}");
             
             if (equippedItem != null)
             {

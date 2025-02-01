@@ -15,8 +15,6 @@ namespace Models
         {
             _signalBus = signalBus;
             _playerController = playerController;
-            
-            _signalBus.Fire(new ModelServiceSignal {PlayerPlayerModel = this});
         }
 
         public void Initialize()
@@ -26,6 +24,8 @@ namespace Models
             _playerController.Armor += HandleArmor;
             
             Debug.Log("Player Model");
+            Debug.Log("Model fired");
+            _signalBus.Fire(new ModelServiceSignal {PlayerPlayerModel = this});
         }
 
         public void IncreaseHealth(float hp)

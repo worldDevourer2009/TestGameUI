@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Components
 {
@@ -18,13 +19,29 @@ namespace Components
 
         public void TakeDamage(float damage)
         {
-            var entityArmor = _armor.GetArmor() * 0.01f;
-            var afterMathDamage = damage - damage * entityArmor / 100;
+            var rand = Random.Range(0, 2);
             
-            Debug.Log($"Entity armor and receaving armor {entityArmor} " +
-                      $"and  damage {afterMathDamage} and recieved damage {damage}");
+            if (rand == 0)
+            {
+                var entityArmorBody = _armor.GetArmorBody() * 0.01f;
+                var afterMathDamage = damage - damage * entityArmorBody / 100;
+                
+                Debug.Log($"Entity armor and receaving armor {entityArmorBody} " +
+                          $"and  damage {afterMathDamage} and recieved damage {damage}");
+                
+                _health.DecreaseHealthBody(afterMathDamage);
+            }
+            else
+            {
+                var entityArmorBody = _armor.GetArmorHead() * 0.01f;
+                var afterMathDamage = damage - damage * entityArmorBody / 100;
+                
+                Debug.Log($"Entity armor and receaving armor {entityArmorBody} " +
+                          $"and  damage {afterMathDamage} and recieved damage {damage}");
+                
+                _health.DecreaseHealthHead(afterMathDamage);
+            }
             
-            _health.DecreaseHealth(afterMathDamage);
             var newHp = _health.GetMaxHealth();
             
             OnTakenDamage?.Invoke(newHp);

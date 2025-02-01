@@ -4,6 +4,7 @@ namespace Components
 {
     public interface IInventory
     {
+        bool IsEmpty { get; }
         void GetItemFromInventoryByType(ItemType type, int amount = 1);
         void Store(StorableObjectComponent storable, int amount = 1);
         public void RemoveItem(StorableObjectComponent storable, int amount = 1);

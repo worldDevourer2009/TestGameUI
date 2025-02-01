@@ -41,10 +41,9 @@ namespace Components
         public void Click()
         {
             if (_currentConfig == null && _currentGunConfig == null) return;
-
-            //_inventory.RemoveItem(_currentConfig., _currentGunConfig.Consumable);
             
-            _signalBus.Fire(new PlayerFiredSignal());
+            //_inventory.RemoveItem(_currentConfig.ItemType, _currentGunConfig.Consumable);
+            _signalBus.Fire(new PlayerFiredSignal() { Damage = _currentConfig.ItemModifierValue});
         }
 
         private void SetGunConfig(ItemType type)
@@ -54,6 +53,11 @@ namespace Components
             
             if (type == ItemType.Rifle)
                 _currentGunConfig = gunConfig.FirstOrDefault(x => x.GunType == GunType.Rifle);
+        }
+
+        private void OnDestroy()
+        {
+             _signalBus.TryUnsubscribe<SelectedGunSignal>(HandleGunDamage);
         }
     }
 }

@@ -3,11 +3,14 @@ using Factories;
 using ModestTree;
 using SavesManagement;
 using UnityEngine;
+using Zenject;
 
 namespace Components
 {
+    [ZenjectAllowDuringValidation]
     public class InventoryController : IInventory, ISaveable
     {
+        public bool IsEmpty => IsEmptyInventory();
         public string SaveId => "Inventory";
         
         private readonly SlotHandler[] _slots;
@@ -18,6 +21,11 @@ namespace Components
             _slots = slots;
             _createItem = createItem;
             Debug.Log($"Constrcut inventory and {_createItem == null}");
+        }
+
+        private bool IsEmptyInventory()
+        {
+            return _slots.Select(slot => slot.GetComponentInChildren<StorableObjectComponent>()).All(item => item != null);
         }
 
         public void GetItemFromInventoryByType(ItemType type, int amount = 1)
@@ -98,8 +106,26 @@ namespace Components
             }
         }
         
+        private void ClearAllSlots()
+        {
+            foreach (var slot in _slots)
+            {
+                var item = GetItemFromSlot(slot);
+                if (item == null) continue;
+                
+                Object.Destroy(item);
+            }
+        }
+        
+        private StorableObjectComponent GetItemFromSlot(SlotHandler slot)
+        {
+            return slot?.GetComponentInChildren<StorableObjectComponent>();
+        }
+        
         public void SaveData(GameData gameData)
         {
+            if (gameData?.inventoryData == null) return;
+            
             gameData.inventoryData.slots.Clear();
             
             foreach (var slot in _slots)
@@ -120,6 +146,10 @@ namespace Components
 
         public void LoadData(GameData gameData)
         {
+            if (gameData?.inventoryData == null) return;
+            
+            ClearAllSlots();
+            
             foreach (var slot in _slots)
             {
                 var item = slot.GetComponentInChildren<StorableObjectComponent>();

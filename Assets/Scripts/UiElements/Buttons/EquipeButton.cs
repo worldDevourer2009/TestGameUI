@@ -51,7 +51,7 @@ namespace UiElements
 
         public void OnDestroy()
         {
-            _signalBus.Unsubscribe<ItemClickedSignal>(HandleItem);
+            _signalBus.TryUnsubscribe<ItemClickedSignal>(HandleItem);
         }
     }
 }

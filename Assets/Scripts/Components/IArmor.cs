@@ -4,7 +4,8 @@ namespace Components
     {
         void SetArmorHead(float armor);
         void SetArmorBody(float armor);
-        float GetArmor();
+        float GetArmorBody();
+        float GetArmorHead();
         void IncreaseArmorHead(float armor);
         void DecreaseArmorHead(float armor);
         void IncreaseArmorBody(float armor);

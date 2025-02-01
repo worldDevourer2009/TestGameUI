@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Services.SavesManagement.SavePersistentDataManager;
 using UnityEngine;
 using Zenject;
@@ -14,8 +15,8 @@ namespace SavesManagement
 
         [Inject]
         public SaveLoadSystem(
-            ISaveLoadNewGame saveLoadNewGame,
-            [Inject(Source = InjectSources.Any)] List<ISaveable> saveables)
+            ISaveLoadNewGame saveLoadNewGame, 
+            [Inject(Optional = true, Source = InjectSources.Any)] List<ISaveable> saveables)
         {
             _saveLoadNewGame = saveLoadNewGame;
             _saveables = saveables;
@@ -59,12 +60,22 @@ namespace SavesManagement
         public void LoadGameData(string gameName)
         {
             Debug.Log($"Loading data with Name {gameName}");
-            gameName = "";
-            _gameData = _saveLoadNewGame.Load(gameName);
+        
+            try
+            {
+                _gameData = _saveLoadNewGame.Load(gameName);
+            }
+            catch (FileNotFoundException)
+            {
+                Debug.Log($"Save {gameName} not found");
+                NewGame();
+                return;
+            }
 
             if (_gameData == null)
             {
-                Debug.Log("null data passed");
+                Debug.Log("Save data is null");
+                NewGame();
                 return;
             }
             
