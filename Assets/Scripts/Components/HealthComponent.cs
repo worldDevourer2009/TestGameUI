@@ -25,7 +25,7 @@ namespace Components
         public void SetHealth(float hp)
         {
             _currentHealth = hp;
-            Debug.Log($"Setting health to {_currentHealth}");
+            Debug.Log($"set health to {_currentHealth}");
             
             _isDead = false;
             OnDeath?.Invoke(false);
@@ -34,7 +34,7 @@ namespace Components
         public void IncreaseHealth(float hp)
         {
             _currentHealth += hp;
-            Debug.Log($"Increasing health to {_currentHealth}");
+            Debug.Log($"increasing health to {_currentHealth}");
             
             if (_currentHealth <= _maxHealth)
             {
@@ -50,7 +50,7 @@ namespace Components
         {
             _currentHealth -= hp * (1 + 40f / 100f);
             
-            Debug.Log($"Decreasing health head to {_currentHealth}");
+            Debug.Log($"decreasing health head to {_currentHealth}");
             if (_currentHealth > 0) return; 
             _currentHealth = 0;
             
@@ -62,7 +62,7 @@ namespace Components
         {
             _currentHealth -= hp;
             
-            Debug.Log($"Decreasing health body to {_currentHealth}");
+            Debug.Log($"decreasing health body to {_currentHealth}");
             if (_currentHealth > 0) return; 
             _currentHealth = 0;
             

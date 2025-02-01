@@ -42,7 +42,7 @@ namespace Components
         {
             if (_currentConfig == null && _currentGunConfig == null) return;
             
-            //_inventory.RemoveItem(_currentConfig.ItemType, _currentGunConfig.Consumable);
+            _inventory.GetItemFromInventoryByType(_currentConfig.ItemType, _currentGunConfig.Consumable);
             _signalBus.Fire(new PlayerFiredSignal() { Damage = _currentConfig.ItemModifierValue});
         }
 

@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SavesManagement;
 using UnityEngine;
 using Application = UnityEngine.Device.Application;
 
-namespace Services.SavesManagement.SavePersistentDataManager
+namespace SavesManagement
 {
     public class SaveManager : ISaveLoadNewGame
     {

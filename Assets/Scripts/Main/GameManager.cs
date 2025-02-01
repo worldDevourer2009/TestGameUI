@@ -5,7 +5,7 @@ using Zenject;
 
 namespace Main
 {
-    public class GameManager : MonoBehaviour, IInitializable, ITickable
+    public class GameManager : MonoBehaviour, IInitializable
     {
         [SerializeField] private GameObject gameOverView;
         [SerializeField] private GameObject youWonView;
@@ -32,18 +32,13 @@ namespace Main
         {
             var isDead = evt.IsDead;
             youWonView.gameObject.SetActive(isDead);
+            SaveAllData();
         }
 
         private void HandlePlayerDeath(PlayerDeathSignal evt)
         {
             var isDead = evt.IsDead;
             gameOverView.gameObject.SetActive(isDead);
-        }
-
-        public void Tick()
-        {
-            if (Input.GetKeyDown(KeyCode.S))
-                SaveAllData();
         }
 
         private void SaveAllData()
@@ -53,7 +48,7 @@ namespace Main
             if (_saveLoadSystem != null)
                 _saveLoadSystem.SaveGameData();
             else
-                Debug.Log("SaveLoadSystem is not initialized!");
+                Debug.Log("Save is not init");
         }
     }
 }

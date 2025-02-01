@@ -19,6 +19,10 @@ namespace Enemies
         private readonly SignalBus _signalBus;
         private readonly IHealth _health;
         private readonly IAttack _attack;
+        /// <summary>
+        /// Можно сделать список конфигов, которые можно будет настроить,
+        /// которые будут содержать свои списки предметов для спавна
+        /// </summary>
         private readonly List<ItemType> _loot;
 
         public EnemyController(SignalBus signalBus, IHealth health, IAttack attack, List<ItemType> loot)
@@ -102,6 +106,8 @@ namespace Enemies
         event Action<float> OnAttack;
         
         void IncreaseHealth(float hp);
+        
+        //To scale project
         void TakeDamage(float damage);
         void Attack();
     }

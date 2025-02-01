@@ -4,17 +4,19 @@ using ModestTree;
 using SavesManagement;
 using UnityEngine;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace Components
 {
     [ZenjectAllowDuringValidation]
     public class InventoryController : IInventory, ISaveable
     {
-        public bool IsEmpty => IsEmptyInventory();
+        public bool IsEmpty => _isEmpty;
         public string SaveId => "Inventory";
         
         private readonly SlotHandler[] _slots;
         private readonly ICreateItem _createItem;
+        private bool _isEmpty = true;
 
         public InventoryController(SlotHandler[] slots, ICreateItem createItem)
         {
@@ -23,16 +25,15 @@ namespace Components
             Debug.Log($"Constrcut inventory and {_createItem == null}");
         }
 
-        private bool IsEmptyInventory()
-        {
-            return _slots.Select(slot => slot.GetComponentInChildren<StorableObjectComponent>()).All(item => item != null);
-        }
-
         public void GetItemFromInventoryByType(ItemType type, int amount = 1)
         {
-            _slots
+            var targetItem = _slots
                 .Select(x => x.GetComponentInChildren<StorableObjectComponent>())
                 .FirstOrDefault(x => x != null && x.GetItemConfig().ItemType == type);
+
+            if (targetItem == null) return;
+            
+            RemoveItem(targetItem, amount);
         }
 
         public void Store(StorableObjectComponent storable, int amount = 1)
@@ -79,6 +80,12 @@ namespace Components
             return newItem;
         }
         
+        private void UpdateEmptyStatus()
+        {
+            _isEmpty = _slots.All(slot => 
+                slot.GetComponentInChildren<StorableObjectComponent>() == null);
+        }
+        
         public SlotHandler GetFreeSlot()
         {
             return _slots.FirstOrDefault(x => 
@@ -87,10 +94,12 @@ namespace Components
 
         public void RemoveItem(StorableObjectComponent storable, int amount = 1)
         {
+            if (storable == null || amount <= 0) return;
+
             foreach (var slot in _slots)
             {
                 var item = slot.GetComponentInChildren<StorableObjectComponent>();
-                if (item == null || item.GetItemConfig().ItemType != storable.GetItemConfig().ItemType) continue;
+                if (item == null || item != storable) continue;
 
                 if (item.Count > amount)
                 {
@@ -99,10 +108,15 @@ namespace Components
                     return;
                 }
                 
-                amount -= item.Count; 
+                amount -= item.Count;
                 item.Count = 0;
-                item.UpdateCount(); 
-                if (amount <= 0) return;
+                
+                item.UpdateCount();
+                
+                if (item == null) return;
+                Object.Destroy(item.gameObject);
+        
+                if (amount <= 0) break;
             }
         }
         
@@ -112,14 +126,13 @@ namespace Components
             {
                 var item = GetItemFromSlot(slot);
                 if (item == null) continue;
-                
                 Object.Destroy(item);
             }
         }
         
         private StorableObjectComponent GetItemFromSlot(SlotHandler slot)
         {
-            return slot?.GetComponentInChildren<StorableObjectComponent>();
+            return slot.GetComponentInChildren<StorableObjectComponent>();
         }
         
         public void SaveData(GameData gameData)
@@ -149,6 +162,7 @@ namespace Components
             if (gameData?.inventoryData == null) return;
             
             ClearAllSlots();
+            _isEmpty = true;
             
             foreach (var slot in _slots)
             {
@@ -166,6 +180,8 @@ namespace Components
                 item.Count = slotData.amount;
                 item.UpdateCount();
             }
+            
+            UpdateEmptyStatus();
         }
     }
 }

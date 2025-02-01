@@ -8,6 +8,8 @@ namespace Controllers
         event Action<float> Heal;
         event Action<float> Armor;
 
+        
+        //to Scale project
         void DecreasePlayerHealth(float value);
         void IncreasePlayerHealth(float value);
         void SetPlayerHeadArmor(float value);

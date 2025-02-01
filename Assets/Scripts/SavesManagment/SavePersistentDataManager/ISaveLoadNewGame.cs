@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using SavesManagement;
 
-namespace Services.SavesManagement.SavePersistentDataManager
+namespace SavesManagement
 {
     public interface ISaveLoadNewGame
     {

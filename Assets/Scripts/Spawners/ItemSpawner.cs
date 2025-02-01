@@ -31,9 +31,13 @@ namespace Spawners
         public void Initialize()
         {
             _signalBus.Subscribe<EnemyDeathSignal>(HanldeLoot);
+            if (!_inventory.IsEmpty) return;
+            Debug.Log($"Invnetory empty is {_inventory.IsEmpty}");
+            HandleAddingStandardLoot();
+        }
 
-            Debug.Log("Init spawner");
-            
+        private void HandleAddingStandardLoot()
+        {
             foreach (var item in standardItems)
             {
                 SpawnItem(item);
